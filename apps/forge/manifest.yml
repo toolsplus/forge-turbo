@@ -1,0 +1,37 @@
+modules:
+  jira:issuePanel:
+    - key: issue-panel
+      resource: issue-panel-resource
+      resolver:
+        function: resolver
+      title: Hello issue panel
+      viewportSize: medium
+      tooltip: Hello world
+      icon: https://developer.atlassian.com/platform/forge/images/issue-panel-icon.svg
+  jira:issueGlance:
+    - key: issue-glance
+      resource: issue-glance-resource
+      resolver:
+        function: resolver
+      title: Hello issue glance
+      label: Click me
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: issue-panel-resource
+    path: ../issue-panel/build
+    tunnel:
+      port: 3000
+  - key: issue-glance-resource
+    path: ../issue-glance/build
+    tunnel:
+      port: 3001
+permissions:
+  content:
+    styles:
+      - "unsafe-inline"
+  scopes:
+    - storage:app
+app:
+  id: ari:cloud:ecosystem::app/a76f43da-3750-46c6-8962-2e6bc73f2b27

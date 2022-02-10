@@ -1,0 +1,18 @@
+{
+  "name": "forge-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+  },
+  "dependencies": {
+    "@forge/resolver": "^1.3.5",
+    "issue-panel": "*",
+    "issue-glance": "*"
+  },
+  "scripts": {
+    "dev": "forge tunnel -d",
+    "build": "forge deploy"
+  }
+}

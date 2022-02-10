@@ -1,77 +1,75 @@
-# Turborepo starter with NPM
+# Forge Monorepo Example
 
-This is an official starter turborepo.
+Simple example of a Forge app with Custom UI, based on a monorepo structure using [Turborepo](https://turborepo.org/).
 
-## What's inside?
+## Goals
 
-This turborepo uses [NPM](https://www.npmjs.com/) as a package manager. It includes the following packages/apps:
+* Simple build and dev workflow
+* Allows extracting shared logic to separate packages
+* Easily use shared logic in Forge backend (FAAS) and custom UI frontend
 
-### Apps and Packages
+## Getting started
 
-- `docs`: a [Next.js](https://nextjs.org) app
-- `web`: another [Next.js](https://nextjs.org) app
-- `ui`: a stub React component library shared by both `web` and `docs` applications
-- `config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+Make sure you have the required dependencies to develop Forge apps installed. See [Getting started](https://developer.atlassian.com/platform/forge/getting-started/) for instructions.
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+After that, run `npm install` from the project root. This will install dependencies for the root project and all sub-projects (custom UIs and Forge app).
 
-### Utilities
+Register the Forge app by running the following command from the `apps/forge` folder 
 
-This turborepo has some additional tools already setup for you:
+    forge register
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+Build the app from the project root directory by running
 
-## Setup
+    npm run build
 
-This repository is used in the `npx create-turbo@latest` command, and selected when choosing which package manager you wish to use with your monorepo (NPM).
+This will build shared dependencies (`packages`), custom UI project and finally deploy the Forge app.
+
+Finally, install the app, again by running the command from the `apps/forge` folder
+
+    forge install
+
+## Usage
+
+### Development
+
+> The development process does not work yet as expected (see Known Issues below).
+
+    npm run dev
+
+To work around this issue do the following:
+
+1. Remove the `dev` script from `apps/forge/package.json`
+2. Run `npm run dev` from the project root
+3. Run `forge tunnel` from `apps/forge` directory
 
 ### Build
 
-To build all apps and packages, run the following command:
+Simply run the following command from the project root:
+
+    npm run build
+
+## Known issues
+
+### Development workflow does not work as expected
+ 
+Running `turbo run dev` (or `npm run dev`) from the project root does not work as expected. Forge tunnel complains `the input device is not a TTY` which seems to have to do with the [Docker process startup](https://stackoverflow.com/questions/43099116/error-the-input-device-is-not-a-tty). 
+
+Additionally, the Forge linter produces the errors, but they are not fatal. Linting errors seem to be an issue with relative paths in the `manifest.yml`:
 
 ```
-cd my-turborepo
-npm run build
-```
+=== Running forge lint...
 
-### Develop
+/app/manifest.yml
+23:10   error    missing index.html file in directory (../issue-panel/build) is being referenced by a custom UI resource in jira:issuePanel module  valid-resource-required
 
-To develop all apps and packages, run the following command:
+23:10   error    missing directory '../issue-panel/build' is being referenced by 'issue-panel-resource' in resources  valid-resource-required
 
-```
-cd my-turborepo
-npm run dev
-```
+27:10   error    missing index.html file in directory (../issue-glance/build) is being referenced by a custom UI resource in jira:issueGlance module  valid-resource-required
 
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching (Beta)](https://turborepo.org/docs/features/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching (Beta) you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
+27:10   error    missing directory '../issue-glance/build' is being referenced by 'issue-glance-resource' in resources  valid-resource-required
 
 ```
-cd my-turborepo
-npx turbo login
-```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Running specific Forge CLI commands
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Pipelines](https://turborepo.org/docs/features/pipelines)
-- [Caching](https://turborepo.org/docs/features/caching)
-- [Remote Caching (Beta)](https://turborepo.org/docs/features/remote-caching)
-- [Scoped Tasks](https://turborepo.org/docs/features/scopes)
-- [Configuration Options](https://turborepo.org/docs/reference/configuration)
-- [CLI Usage](https://turborepo.org/docs/reference/command-line-reference)
+To run specific Forge CLI commands (`forge register`, `forge install`, etc.), you should run them directly from the `apps/forge` directory. However, it should not be too difficult to tweak Turborepo to allow running them from the project root as well.
